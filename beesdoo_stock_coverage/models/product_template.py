@@ -20,16 +20,21 @@ class ProductTemplate(models.Model):
 
     computation_range = fields.Integer("Computation range (days)", default=14)
     range_sales = fields.Float(
-        string="Sales over Range", compute="_compute_stock_coverage"
+        string="Sales over Range",
+        compute="_compute_stock_coverage",
+        store=True,
     )
     daily_sales = fields.Float(
-        string="Daily Sales", compute="_compute_stock_coverage"
+        string="Daily Sales", compute="_compute_stock_coverage", store=True,
     )
     stock_coverage = fields.Float(
-        string="Stock Coverage (days)", compute="_compute_stock_coverage"
+        string="Stock Coverage (days)",
+        compute="_compute_stock_coverage",
+        store=True,
     )
 
     @api.multi
+    @api.depends("computation_range", "virtual_available", "active")
     def _compute_stock_coverage(self):
         query = """
         select template.id  as product_template_id,
